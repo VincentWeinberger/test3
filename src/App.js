@@ -30,12 +30,14 @@ function App() {
 
   //Toggle readonly so that user can add/update event data
   const toggleRO = (i) => {
-    setEvents(
-      events.map((event) =>
-        event.id === i ? { ...event, readonly: !event.readonly } : event
+    if (actionState === "update" || actionState === "none") {
+      setEvents(
+        events.map((event) =>
+          event.id === i ? { ...event, readonly: !event.readonly } : event
+        )
       )
-    )
-    actionState === "none" ? setActionState("update") : setActionState("none")
+      actionState === "none" ? setActionState("update") : setActionState("none")
+    } else deleteLastEvent()
   }
 
   //Add event to our list of events in the State
@@ -70,6 +72,13 @@ function App() {
     setActionState("none")
   }
 
+  //Helper function that will delete the last event of the list in the case where the user cancels
+  //a newly added event and does not want to save it.
+  const deleteLastEvent = () => {
+    const lastID = events.at(-1).id
+    deleteEvent(lastID)
+  }
+
   /*
 --DEVELOPMENT NOTES--
 
@@ -93,7 +102,7 @@ DOES NOT need to be called inside Event component: Add Button, Delete Button, To
                 <button
                   className="update-btn"
                   onClick={() => toggleRO(event.id)}
-                  disabeld={actionState === "none" ? "" : "true"}
+                  disabled={actionState === "none" ? "" : "true"}
                 >
                   Update
                 </button>
